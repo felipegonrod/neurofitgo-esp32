@@ -88,6 +88,17 @@ function supportPage() {
         relacionadas con este proyecto. Si esta app fue compartida por un equipo
         o institución, también puedes contactar directamente a ese equipo.
       </p>
+      <h2>Contacto</h2>
+      <p>
+        Teléfono:
+        <a href="tel:+522721976963">+52 272 197 69 63</a>
+      </p>
+      <p>
+        Correo:
+        <a href="mailto:veritas.tech.business@gmail.com">
+          veritas.tech.business@gmail.com
+        </a>
+      </p>
     `
   );
 }
