@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>neurofitgo</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, "Aptos", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --bg: #ffffff;
+      --panel: #ffffff;
+      --line: #e5e7eb;
+      --text: #0f172a;
+      --muted: #667085;
+      --accent: #2563eb;
+      --accent-soft: #dbeafe;
+      --shadow: 0 24px 70px rgba(15, 23, 42, 0.08);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, #f8fbff, transparent 28%),
+        linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      color: var(--text);
+    }
+
+    .dashboard {
+      width: min(1080px, calc(100vw - 48px));
+      margin: 40px auto;
+      display: grid;
+      gap: 24px;
+    }
+
+    .hero {
+      padding: 32px;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.2rem, 4vw, 4rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+    }
+
+    .hero p {
+      margin: 14px 0 0;
+      max-width: 560px;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 12px;
+    }
+
+    button {
+      border: 1px solid transparent;
+      border-radius: 999px;
+      padding: 14px 22px;
+      font-size: 0.98rem;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--text);
+      color: #ffffff;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    .hero-status {
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+      gap: 24px;
+    }
+
+    .panel {
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .panel-label {
+      margin: 0 0 20px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .gauge-card {
+      display: grid;
+      gap: 18px;
+      justify-items: center;
+    }
+
+    .gauge-title {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .gauge-shell {
+      width: min(100%, 640px);
+      aspect-ratio: 2 / 1.15;
+      position: relative;
+      display: grid;
+      place-items: end center;
+      overflow: hidden;
+    }
+
+    .gauge-arc {
+      position: absolute;
+      inset: 0;
+      border-radius: 999px 999px 0 0;
+      background:
+        conic-gradient(
+          from 180deg at 50% 100%,
+          #c7d2fe 0deg,
+          #dbeafe 58deg,
+          #e5e7eb 120deg,
+          #dbeafe 198deg,
+          #bfdbfe 238deg,
+          #93c5fd 270deg
+        );
+      clip-path: inset(0 0 48% 0);
+    }
+
+    .gauge-inner {
+      position: absolute;
+      inset: 18% 13% 0 13%;
+      border-radius: 999px 999px 0 0;
+      background: #ffffff;
+      border: 1px solid #f1f5f9;
+      clip-path: inset(0 0 44% 0);
+    }
+
+    .needle {
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      width: 5px;
+      height: 47%;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #1d4ed8 0%, #0f172a 100%);
+      transform-origin: bottom center;
+      transform: translateX(-50%) rotate(-60deg);
+      transition: transform 280ms ease;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.24);
+    }
+
+    .needle::before {
+      content: "";
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #1d4ed8;
+      transform: translateX(-50%);
+    }
+
+    .needle-pivot {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 28px;
+      height: 28px;
+      border: 5px solid #dbeafe;
+      border-radius: 50%;
+      background: #0f172a;
+      transform: translate(-50%, 25%);
+    }
+
+    .gauge-scale {
+      width: min(100%, 620px);
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .gauge-scale span:nth-child(2) {
+      transform: translateX(-8px);
+    }
+
+    .state-value {
+      margin: 0;
+      font-size: clamp(2.4rem, 4vw, 4rem);
+      font-weight: 800;
+      letter-spacing: -0.05em;
+    }
+
+    .state-caption {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--muted);
+    }
+
+    .state-subvalue {
+      margin: -8px 0 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .stat-list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .stat {
+      padding: 18px 18px 16px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    }
+
+    .stat h3 {
+      margin: 0 0 10px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .stat p {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    @media (max-width: 840px) {
+      .dashboard {
+        width: calc(100vw - 24px);
+        margin: 12px auto;
+      }
+
+      .hero,
+      .panel {
+        padding: 22px;
+        border-radius: 22px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-actions {
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="dashboard">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Vista del sistema</p>
+        <h1>NeuroFit Go</h1>
+        <p>Visualización del control del sistema en tiempo real</p>
+      </div>
+      <div class="hero-actions">
+        <button id="connectButton">Conectar NeuroFit</button>
+        <div id="meta" class="hero-status">No conectado</div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="panel gauge-card">
+        <p class="panel-label">Telemetría en vivo</p>
+        <h2 class="gauge-title">Potencia del sistema</h2>
+        <div class="gauge-shell" aria-hidden="true">
+          <div class="gauge-arc"></div>
+          <div class="gauge-inner"></div>
+          <div id="needle" class="needle"></div>
+          <div class="needle-pivot"></div>
+        </div>
+        <div class="gauge-scale">
+          <span>0</span>
+          <span>128</span>
+          <span>255</span>
+        </div>
+        <p id="status" class="state-value">0</p>
+        <p id="statusDetail" class="state-subvalue">LOW</p>
+        <p class="state-caption">El gráfico mapeo la señal entrante del sistema <strong>0</strong> a <strong>255</strong>.</p>
+      </article>
+
+      <aside class="panel">
+        <p class="panel-label">Vista general</p>
+        <div class="stat-list">
+          <section class="stat">
+            <h3>Conexión</h3>
+            <p id="connectionValue">Desconectado</p>
+          </section>
+          <section class="stat">
+            <h3>Señal actual</h3>
+            <p id="signalValue">0 / 255</p>
+          </section>
+          <section class="stat">
+            <h3>Estado de la señal</h3>
+            <p id="signalLabel">LOW</p>
+          </section>
+          <section class="stat">
+            <h3>Fuente de entrada</h3>
+            <p>ESP32 via Web Serial API</p>
+          </section>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const connectButton = document.getElementById("connectButton");
+    const statusEl = document.getElementById("status");
+    const metaEl = document.getElementById("meta");
+    const needleEl = document.getElementById("needle");
+    const connectionValueEl = document.getElementById("connectionValue");
+    const signalValueEl = document.getElementById("signalValue");
+    const signalLabelEl = document.getElementById("signalLabel");
+    const statusDetailEl = document.getElementById("statusDetail");
+
+    let port;
+    let reader;
+
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function getSignalLabel(value) {
+      if (value === 0) {
+        return "LOW";
+      }
+
+      if (value === 255) {
+        return "HIGH";
+      }
+
+      return "ACTIVE";
+    }
+
+    function renderState(value) {
+      const normalizedValue = clamp(value, 0, 255);
+      const rotation = -60 + (normalizedValue / 255) * 120;
+      const signalLabel = getSignalLabel(normalizedValue);
+
+      statusEl.textContent = String(normalizedValue);
+      signalValueEl.textContent = `${normalizedValue} / 255`;
+      signalLabelEl.textContent = signalLabel;
+      statusDetailEl.textContent = signalLabel;
+      needleEl.style.transform = `translateX(-50%) rotate(${rotation}deg)`;
+    }
+
+    async function connectSerial() {
+      if (!("serial" in navigator)) {
+        metaEl.textContent = "Web Serial no es compatible con este navegador.";
+        connectionValueEl.textContent = "No compatible";
+        return;
+      }
+
+      connectButton.disabled = true;
+
+      try {
+        port = await navigator.serial.requestPort();
+        await port.open({ baudRate: 115200 });
+        metaEl.textContent = "Conectado. Esperando datos...";
+        connectionValueEl.textContent = "Conectado";
+        await readLoop();
+      } catch (error) {
+        metaEl.textContent = `Error de conexión: ${error.message}`;
+        connectionValueEl.textContent = "Error de conexión";
+        connectButton.disabled = false;
+      }
+    }
+
+    async function readLoop() {
+      const decoder = new TextDecoderStream();
+      port.readable.pipeTo(decoder.writable);
+      const inputStream = decoder.readable;
+      reader = inputStream.getReader();
+
+      let buffer = "";
+
+      try {
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) {
+            break;
+          }
+
+          buffer += value;
+          const lines = buffer.split(/\r?\n/);
+          buffer = lines.pop() || "";
+
+          for (const line of lines) {
+            const message = line.trim().toUpperCase();
+            const numericValue = Number.parseInt(message, 10);
+
+            if (!Number.isNaN(numericValue)) {
+              renderState(numericValue);
+              metaEl.textContent = "Recebiendo datos en vivo del ESP32";
+            } else if (message === "HIGH") {
+              renderState(255);
+              metaEl.textContent = "Recebiendo datos en vivo del ESP32";
+            } else if (message === "LOW") {
+              renderState(0);
+              metaEl.textContent = "Recebiendo datos en vivo del ESP32";
+            }
+          }
+        }
+      } catch (error) {
+        metaEl.textContent = `Error de lectura: ${error.message}`;
+        connectionValueEl.textContent = "Error de lectura";
+      } finally {
+        reader.releaseLock();
+        connectButton.disabled = false;
+      }
+    }
+
+    connectButton.addEventListener("click", connectSerial);
+  </script>
+</body>
+</html>
