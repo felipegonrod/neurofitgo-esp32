@@ -1,0 +1,9 @@
+{
+  "name": "neurofitgo-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sitio web simple de soporte y privacidad para NeuroFitGo ESP32",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
