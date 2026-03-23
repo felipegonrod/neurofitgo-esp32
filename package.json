@@ -1,0 +1,7 @@
+{
+  "name": "neurofitgo-esp32",
+  "private": true,
+  "scripts": {
+    "start": "node site/server.js"
+  }
+}

@@ -1,6 +1,7 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const { URL } = require("url");
 
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || "0.0.0.0";
@@ -157,7 +158,10 @@ function notFoundPage() {
 }
 
 const server = http.createServer((req, res) => {
-  const requestPath = req.url || "/";
+  const requestUrl = new URL(req.url || "/", `http://${req.headers.host || "localhost"}`);
+  const rawPath = requestUrl.pathname || "/";
+  const requestPath =
+    rawPath.length > 1 && rawPath.endsWith("/") ? rawPath.slice(0, -1) : rawPath;
 
   if (requestPath === "/favicon.ico") {
     res.writeHead(204);
