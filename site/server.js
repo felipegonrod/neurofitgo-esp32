@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 
 const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || "0.0.0.0";
 
 function layout(title, currentPath, content) {
   const navLink = (href, label) => {
@@ -147,6 +148,18 @@ function notFoundPage() {
 const server = http.createServer((req, res) => {
   const requestPath = req.url || "/";
 
+  if (requestPath === "/favicon.ico") {
+    res.writeHead(204);
+    res.end();
+    return;
+  }
+
+  if (requestPath === "/health") {
+    res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
+    res.end("ok");
+    return;
+  }
+
   if (requestPath === "/styles.css") {
     const cssPath = path.join(__dirname, "public", "styles.css");
     fs.readFile(cssPath, "utf8", (error, content) => {
@@ -180,6 +193,6 @@ const server = http.createServer((req, res) => {
   res.end(html);
 });
 
-server.listen(PORT, () => {
-  console.log(`Sitio disponible en http://localhost:${PORT}`);
+server.listen(PORT, HOST, () => {
+  console.log(`Sitio disponible en http://${HOST}:${PORT}`);
 });
