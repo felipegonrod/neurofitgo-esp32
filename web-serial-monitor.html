@@ -4,10 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>neurofitgo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jura:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       color-scheme: light;
-      font-family: Inter, "Aptos", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: "Jura", "Aptos", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       --bg: #ffffff;
       --panel: #ffffff;
       --line: #e5e7eb;
@@ -15,41 +18,46 @@
       --muted: #667085;
       --accent: #2563eb;
       --accent-soft: #dbeafe;
-      --shadow: 0 24px 70px rgba(15, 23, 42, 0.08);
+      --shadow: none;
     }
 
     body {
       margin: 0;
       min-height: 100vh;
-      background:
-        radial-gradient(circle at top left, #f8fbff, transparent 28%),
-        linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      background: #ffffff;
       color: var(--text);
+      font-family: inherit;
+      font-weight: 500;
+      overflow: hidden;
     }
 
     .dashboard {
-      width: min(1080px, calc(100vw - 48px));
-      margin: 40px auto;
+      width: calc(100vw - 24px);
+      max-width: 1400px;
+      height: 100vh;
+      margin: 0 auto;
+      padding: 0;
+      box-sizing: border-box;
       display: grid;
-      gap: 24px;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 2px;
     }
 
     .hero {
-      padding: 32px;
-      border: 1px solid var(--line);
-      border-radius: 28px;
-      background: var(--panel);
+      padding: 4px 12px 2px;
+      border-radius: 24px;
+      background: #ffffff;
       box-shadow: var(--shadow);
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      gap: 24px;
+      align-items: center;
+      gap: 16px;
       flex-wrap: wrap;
     }
 
     .eyebrow {
-      margin: 0 0 10px;
-      font-size: 0.85rem;
+      margin: 0 0 4px;
+      font-size: 0.72rem;
       font-weight: 700;
       letter-spacing: 0.14em;
       text-transform: uppercase;
@@ -58,16 +66,17 @@
 
     h1 {
       margin: 0;
-      font-size: clamp(2.2rem, 4vw, 4rem);
+      font-size: clamp(1.55rem, 3vw, 2.6rem);
       font-weight: 700;
       letter-spacing: -0.04em;
     }
 
     .hero p {
-      margin: 14px 0 0;
+      margin: 4px 0 0;
       max-width: 560px;
-      font-size: 1.05rem;
-      line-height: 1.6;
+      font-size: 0.78rem;
+      line-height: 1.25;
+      font-weight: 500;
       color: var(--muted);
     }
 
@@ -75,15 +84,15 @@
       display: flex;
       flex-direction: column;
       align-items: flex-end;
-      gap: 12px;
+      gap: 6px;
     }
 
     button {
       border: 1px solid transparent;
       border-radius: 999px;
-      padding: 14px 22px;
-      font-size: 0.98rem;
-      font-weight: 700;
+      padding: 10px 18px;
+      font-size: 0.82rem;
+      font-weight: 600;
       cursor: pointer;
       background: var(--text);
       color: #ffffff;
@@ -96,161 +105,300 @@
     }
 
     .hero-status {
-      font-size: 0.95rem;
+      font-size: 0.78rem;
+      font-weight: 500;
       color: var(--muted);
     }
 
     .grid {
       display: grid;
-      grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
-      gap: 24px;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+      min-height: 0;
+      align-items: stretch;
     }
 
     .panel {
-      padding: 28px;
-      border: 1px solid var(--line);
-      border-radius: 28px;
-      background: var(--panel);
+      padding: 8px 14px 2px;
+      border-radius: 24px;
+      background: #ffffff;
       box-shadow: var(--shadow);
+      height: 100%;
+      box-sizing: border-box;
     }
 
     .panel-label {
-      margin: 0 0 20px;
-      font-size: 0.82rem;
+      margin: 0 0 4px;
+      font-size: 0.74rem;
       font-weight: 700;
       letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--muted);
     }
 
+    .gauges-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .gauges-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 6px;
+      flex: 1;
+      min-height: 0;
+    }
+
     .gauge-card {
       display: grid;
-      gap: 18px;
+      gap: 12px;
       justify-items: center;
+      align-content: start;
+      min-height: 0;
+    }
+
+    .motor-card {
+      justify-items: stretch;
     }
 
     .gauge-title {
       margin: 0;
-      font-size: 1.25rem;
-      font-weight: 700;
+      font-size: 1.05rem;
+      font-weight: 600;
+      text-align: center;
     }
 
-    .gauge-shell {
-      width: min(100%, 640px);
-      aspect-ratio: 2 / 1.15;
-      position: relative;
+    .telemetry-sides {
       display: grid;
-      place-items: end center;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      align-items: start;
+      flex: 1;
+    }
+
+    .telemetry-side {
+      display: grid;
+      gap: 1px;
+      justify-items: center;
+      align-content: start;
+      width: 100%;
+      padding: 2px 2px;
+      border-radius: 22px;
+      background: #ffffff;
+    }
+
+    .telemetry-side h3 {
+      margin: 0;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .pedal-block {
+      display: grid;
+      gap: 0;
+      justify-items: center;
+      width: 100%;
+    }
+
+    .motor-visual {
+      position: relative;
+      width: min(100%, 520px);
+      aspect-ratio: 1;
       overflow: hidden;
     }
 
-    .gauge-arc {
+    .motor-assembly {
       position: absolute;
       inset: 0;
-      border-radius: 999px 999px 0 0;
-      background:
-        conic-gradient(
-          from 180deg at 50% 100%,
-          #c7d2fe 0deg,
-          #dbeafe 58deg,
-          #e5e7eb 120deg,
-          #dbeafe 198deg,
-          #bfdbfe 238deg,
-          #93c5fd 270deg
-        );
-      clip-path: inset(0 0 48% 0);
+      transform-origin: 50% 50%;
+      transition: transform 180ms linear;
     }
 
-    .gauge-inner {
+    .motor-main {
       position: absolute;
-      inset: 18% 13% 0 13%;
-      border-radius: 999px 999px 0 0;
-      background: #ffffff;
-      border: 1px solid #f1f5f9;
-      clip-path: inset(0 0 44% 0);
+      top: 50%;
+      left: calc(50% + 10%);
+      width: 42%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 1px solid #93c5fd;
+      background: radial-gradient(circle at 35% 35%, #ffffff 0%, #dbeafe 72%, #93c5fd 100%);
+      box-shadow: 0 10px 26px rgba(37, 99, 235, 0.16);
+      transform: translate(-50%, -50%);
     }
 
-    .needle {
-      position: absolute;
-      bottom: 14px;
-      left: 50%;
-      width: 5px;
-      height: 47%;
-      border-radius: 999px;
-      background: linear-gradient(180deg, #1d4ed8 0%, #0f172a 100%);
-      transform-origin: bottom center;
-      transform: translateX(-50%) rotate(-60deg);
-      transition: transform 280ms ease;
-      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.24);
-    }
-
-    .needle::before {
+    .motor-main::after {
       content: "";
       position: absolute;
-      top: -8px;
-      left: 50%;
-      width: 16px;
-      height: 16px;
+      inset: 18%;
       border-radius: 50%;
-      background: #1d4ed8;
+      border: 1px solid rgba(147, 197, 253, 0.7);
+    }
+
+    .motor-pedal-shell {
+      position: absolute;
+      top: 50%;
+      left: calc(50% + 36%);
+      width: 19%;
+      aspect-ratio: 1;
+      transform: translate(-50%, -50%);
+    }
+
+    .motor-pedal {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 1px solid #60a5fa;
+      background: radial-gradient(circle at 35% 35%, #ffffff 0%, #bfdbfe 68%, #60a5fa 100%);
+      box-shadow: 0 10px 26px rgba(37, 99, 235, 0.18);
+    }
+
+    .motor-pedal-rotor {
+      position: absolute;
+      inset: 0;
+      transition: transform 180ms linear;
+    }
+
+    .motor-pedal-pointer {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 58%;
+      height: 3px;
+      border-radius: 999px;
+      background: #0f172a;
+      transform: translateY(-50%) translateX(-10%);
+      transform-origin: left center;
+    }
+
+    .motor-reading {
+      margin: -2px 0 0;
+      font-size: 1.26rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .motor-subreading {
+      margin: -6px 0 0;
+      font-size: 0.72rem;
+      font-weight: 400;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .electrode-grid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 4px;
+      align-items: start;
+    }
+
+    .electrode-column {
+      display: grid;
+      gap: 6px;
+      justify-items: center;
+    }
+
+    .electrode-column-label {
+      margin: 0;
+      font-size: 0.64rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .electrode-graphic {
+      --electrode-core-opacity: 0.04;
+      --electrode-mid-opacity: 0.08;
+      --electrode-outer-opacity: 0.02;
+      --electrode-glow-size: 42%;
+      width: min(100%, 74px);
+      aspect-ratio: 1;
+      position: relative;
+      border: 2px solid #2563eb;
+      border-radius: 16px;
+      background:
+        radial-gradient(
+          circle at 50% 48%,
+          rgba(37, 99, 235, var(--electrode-core-opacity)) 0%,
+          rgba(96, 165, 250, var(--electrode-mid-opacity)) calc(var(--electrode-glow-size) * 0.42),
+          rgba(219, 234, 254, var(--electrode-outer-opacity)) calc(var(--electrode-glow-size) * 0.82),
+          rgba(255, 255, 255, 0) 100%
+        ),
+        #ffffff;
+      transition: background 220ms ease, box-shadow 220ms ease;
+    }
+
+    .electrode-graphic::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -14px;
+      width: 3px;
+      height: 14px;
+      border-radius: 999px;
+      background: #2563eb;
       transform: translateX(-50%);
     }
 
-    .needle-pivot {
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      width: 28px;
-      height: 28px;
-      border: 5px solid #dbeafe;
-      border-radius: 50%;
-      background: #0f172a;
-      transform: translate(-50%, 25%);
+    .telemetry-summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 0;
+      text-align: center;
+      align-items: start;
     }
 
-    .gauge-scale {
-      width: min(100%, 620px);
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--muted);
+    .telemetry-metric {
+      display: grid;
+      gap: 2px;
+      justify-items: center;
     }
 
-    .gauge-scale span:nth-child(2) {
-      transform: translateX(-8px);
+    .telemetry-metric .panel-label {
+      margin-bottom: 0;
     }
 
     .state-value {
       margin: 0;
-      font-size: clamp(2.4rem, 4vw, 4rem);
-      font-weight: 800;
+      font-size: clamp(1.3rem, 1.8vw, 1.8rem);
+      font-weight: 700;
       letter-spacing: -0.05em;
     }
 
     .state-caption {
       margin: 0;
-      font-size: 1rem;
+      font-size: 0.7rem;
+      font-weight: 500;
       color: var(--muted);
+      text-align: center;
     }
 
     .state-subvalue {
-      margin: -8px 0 0;
-      font-size: 1rem;
+      margin: -2px 0 0;
+      font-size: 0.7rem;
       font-weight: 600;
       color: var(--muted);
     }
 
     .stat-list {
       display: grid;
-      gap: 16px;
+      gap: 12px;
     }
 
     .stat {
-      padding: 18px 18px 16px;
-      border: 1px solid var(--line);
+      padding: 16px;
       border-radius: 20px;
-      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      background: #ffffff;
     }
 
     .stat h3 {
@@ -264,24 +412,42 @@
 
     .stat p {
       margin: 0;
-      font-size: 1.1rem;
-      font-weight: 700;
+      font-size: 1rem;
+      font-weight: 600;
       color: var(--text);
     }
 
     @media (max-width: 840px) {
+      body {
+        overflow: auto;
+      }
+
       .dashboard {
         width: calc(100vw - 24px);
         margin: 12px auto;
+        min-height: auto;
+        padding: 0 0 12px;
       }
 
       .hero,
       .panel {
-        padding: 22px;
+        padding: 18px;
         border-radius: 22px;
       }
 
       .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .gauges-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .telemetry-sides {
+        grid-template-columns: 1fr;
+      }
+
+      .telemetry-summary {
         grid-template-columns: 1fr;
       }
 
@@ -306,115 +472,517 @@
     </section>
 
     <section class="grid">
-      <article class="panel gauge-card">
+      <article class="panel gauges-panel">
         <p class="panel-label">Telemetría en vivo</p>
-        <h2 class="gauge-title">Potencia del sistema</h2>
-        <div class="gauge-shell" aria-hidden="true">
-          <div class="gauge-arc"></div>
-          <div class="gauge-inner"></div>
-          <div id="needle" class="needle"></div>
-          <div class="needle-pivot"></div>
+        <div class="gauges-grid">
+          <section class="gauge-card motor-card">
+            <div class="telemetry-sides">
+              <section class="telemetry-side">
+                <h3>Lado izquierdo</h3>
+                <div class="pedal-block">
+                  <div class="motor-visual" aria-hidden="true">
+                    <div id="leftPedalAssembly" class="motor-assembly">
+                      <span class="motor-main"></span>
+                      <span class="motor-pedal-shell">
+                        <span class="motor-pedal">
+                          <span id="leftPedalRotor" class="motor-pedal-rotor">
+                            <span class="motor-pedal-pointer"></span>
+                          </span>
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+                  <p id="leftPedalValue" class="motor-reading">0°</p>
+                  <p id="leftPedalRelativeValue" class="motor-subreading">Pedal relativo 0°</p>
+                </div>
+                <div class="electrode-grid">
+                  <div class="electrode-column">
+                    <p class="electrode-column-label">Superiores</p>
+                    <div class="electrode-graphic left-superiores-electrode" aria-hidden="true"></div>
+                    <div class="electrode-graphic left-superiores-electrode" aria-hidden="true"></div>
+                  </div>
+                  <div class="electrode-column">
+                    <p class="electrode-column-label">Inferiores</p>
+                    <div class="electrode-graphic left-inferiores-electrode" aria-hidden="true"></div>
+                    <div class="electrode-graphic left-inferiores-electrode" aria-hidden="true"></div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="telemetry-side">
+                <h3>Lado derecho</h3>
+                <div class="pedal-block">
+                  <div class="motor-visual" aria-hidden="true">
+                    <div id="rightPedalAssembly" class="motor-assembly">
+                      <span class="motor-main"></span>
+                      <span class="motor-pedal-shell">
+                        <span class="motor-pedal">
+                          <span id="rightPedalRotor" class="motor-pedal-rotor">
+                            <span class="motor-pedal-pointer"></span>
+                          </span>
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+                  <p id="rightPedalValue" class="motor-reading">180°</p>
+                  <p id="rightPedalRelativeValue" class="motor-subreading">Pedal relativo 0°</p>
+                </div>
+                <div class="electrode-grid">
+                  <div class="electrode-column">
+                    <p class="electrode-column-label">Superiores</p>
+                    <div class="electrode-graphic right-superiores-electrode" aria-hidden="true"></div>
+                    <div class="electrode-graphic right-superiores-electrode" aria-hidden="true"></div>
+                  </div>
+                  <div class="electrode-column">
+                    <p class="electrode-column-label">Inferiores</p>
+                    <div class="electrode-graphic right-inferiores-electrode" aria-hidden="true"></div>
+                    <div class="electrode-graphic right-inferiores-electrode" aria-hidden="true"></div>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <div class="telemetry-summary">
+              <div class="telemetry-metric">
+                <p class="panel-label">Motores</p>
+                <p id="statusMotores" class="state-value">0.00 rad/s</p>
+              </div>
+              <div class="telemetry-metric">
+                <p class="panel-label">Señal</p>
+                <p id="statusElectrodos" class="state-value">0</p>
+              </div>
+              <div class="telemetry-metric">
+                <p class="panel-label">Estado</p>
+                <p id="statusDetailElectrodos" class="state-subvalue">LOW</p>
+              </div>
+            </div>
+            <p id="statusDetailMotores" class="state-subvalue">S 0 / 255</p>
+            <p class="state-caption">Cada lado muestra su pedal en movimiento y cuatro electrodos con intensidad visual basada en la misma señal entrante del ESP32.</p>
+          </section>
         </div>
-        <div class="gauge-scale">
-          <span>0</span>
-          <span>128</span>
-          <span>255</span>
-        </div>
-        <p id="status" class="state-value">0</p>
-        <p id="statusDetail" class="state-subvalue">LOW</p>
-        <p class="state-caption">El gráfico mapeo la señal entrante del sistema <strong>0</strong> a <strong>255</strong>.</p>
       </article>
 
-      <aside class="panel">
-        <p class="panel-label">Vista general</p>
-        <div class="stat-list">
-          <section class="stat">
-            <h3>Conexión</h3>
-            <p id="connectionValue">Desconectado</p>
-          </section>
-          <section class="stat">
-            <h3>Señal actual</h3>
-            <p id="signalValue">0 / 255</p>
-          </section>
-          <section class="stat">
-            <h3>Estado de la señal</h3>
-            <p id="signalLabel">LOW</p>
-          </section>
-          <section class="stat">
-            <h3>Fuente de entrada</h3>
-            <p>ESP32 via Web Serial API</p>
-          </section>
-        </div>
-      </aside>
     </section>
   </main>
 
   <script>
     const connectButton = document.getElementById("connectButton");
-    const statusEl = document.getElementById("status");
     const metaEl = document.getElementById("meta");
-    const needleEl = document.getElementById("needle");
     const connectionValueEl = document.getElementById("connectionValue");
     const signalValueEl = document.getElementById("signalValue");
     const signalLabelEl = document.getElementById("signalLabel");
-    const statusDetailEl = document.getElementById("statusDetail");
+    const motorStatusEl = document.getElementById("statusMotores");
+    const motorStatusDetailEl = document.getElementById("statusDetailMotores");
+    const leftPedalAssemblyEl = document.getElementById("leftPedalAssembly");
+    const rightPedalAssemblyEl = document.getElementById("rightPedalAssembly");
+    const leftPedalRotorEl = document.getElementById("leftPedalRotor");
+    const rightPedalRotorEl = document.getElementById("rightPedalRotor");
+    const leftPedalValueEl = document.getElementById("leftPedalValue");
+    const rightPedalValueEl = document.getElementById("rightPedalValue");
+    const leftPedalRelativeValueEl = document.getElementById("leftPedalRelativeValue");
+    const rightPedalRelativeValueEl = document.getElementById("rightPedalRelativeValue");
+    const electrodeGroups = {
+      left: {
+        superiores: Array.from(document.querySelectorAll(".left-superiores-electrode")),
+        inferiores: Array.from(document.querySelectorAll(".left-inferiores-electrode")),
+      },
+      right: {
+        superiores: Array.from(document.querySelectorAll(".right-superiores-electrode")),
+        inferiores: Array.from(document.querySelectorAll(".right-inferiores-electrode")),
+      },
+    };
+    const electrodeGauge = {
+      valueEl: document.getElementById("statusElectrodos"),
+      detailEl: document.getElementById("statusDetailElectrodos"),
+    };
 
     let port;
     let reader;
+    let readableClosed;
+    const TWO_PI = Math.PI * 2;
+    const DEBUG_SERIAL = true;
+    const rotationTrackers = {
+      leftCrank: { initialized: false, lastWrappedDegrees: 0, continuousDegrees: 0 },
+      rightCrank: { initialized: false, lastWrappedDegrees: 0, continuousDegrees: 0 },
+      leftPedal: { initialized: false, lastWrappedDegrees: 0, continuousDegrees: 0 },
+      rightPedal: { initialized: false, lastWrappedDegrees: 0, continuousDegrees: 0 },
+    };
+
+    function debugLog(...args) {
+      if (DEBUG_SERIAL) {
+        console.log("[NeuroFit Serial]", ...args);
+      }
+    }
+
+    function debugWarn(...args) {
+      if (DEBUG_SERIAL) {
+        console.warn("[NeuroFit Serial]", ...args);
+      }
+    }
+
+    function debugError(...args) {
+      if (DEBUG_SERIAL) {
+        console.error("[NeuroFit Serial]", ...args);
+      }
+    }
+
+    async function cleanupSerialConnection() {
+      if (reader) {
+        try {
+          debugLog("Cancelling serial reader");
+          await reader.cancel();
+        } catch (error) {
+          debugWarn("Reader cancel skipped", error);
+        }
+
+        try {
+          reader.releaseLock();
+        } catch (error) {
+          debugWarn("Reader release skipped", error);
+        }
+
+        reader = null;
+      }
+
+      if (readableClosed) {
+        try {
+          await readableClosed;
+        } catch (error) {
+          debugWarn("Pipe close skipped", error);
+        }
+
+        readableClosed = null;
+      }
+
+      if (port) {
+        try {
+          await port.close();
+          debugLog("Serial port closed");
+        } catch (error) {
+          debugWarn("Port close skipped", error);
+        }
+
+        port = null;
+      }
+    }
 
     function clamp(value, min, max) {
       return Math.min(max, Math.max(min, value));
     }
 
+    function wrapAngle(angle) {
+      const wrapped = angle % TWO_PI;
+      return wrapped < 0 ? wrapped + TWO_PI : wrapped;
+    }
+
+    function toDegrees(angle) {
+      return (wrapAngle(angle) * 180) / Math.PI;
+    }
+
+    function getContinuousDegrees(angle, tracker) {
+      const wrappedDegrees = toDegrees(angle);
+
+      if (!tracker.initialized) {
+        tracker.initialized = true;
+        tracker.lastWrappedDegrees = wrappedDegrees;
+        tracker.continuousDegrees = wrappedDegrees;
+        return tracker.continuousDegrees;
+      }
+
+      let delta = wrappedDegrees - tracker.lastWrappedDegrees;
+      if (delta > 180) {
+        delta -= 360;
+      } else if (delta < -180) {
+        delta += 360;
+      }
+
+      tracker.lastWrappedDegrees = wrappedDegrees;
+      tracker.continuousDegrees += delta;
+      return tracker.continuousDegrees;
+    }
+
+    function normalizeDegrees(degrees) {
+      let normalized = Math.round(degrees) % 360;
+      if (normalized > 180) {
+        normalized -= 360;
+      } else if (normalized <= -180) {
+        normalized += 360;
+      }
+
+      return normalized;
+    }
+
     function getSignalLabel(value) {
-      if (value === 0) {
+      if (value <= 0) {
         return "LOW";
       }
 
-      if (value === 255) {
+      if (value >= 170) {
         return "HIGH";
       }
 
-      return "ACTIVE";
+      return "MID";
     }
 
-    function renderState(value) {
-      const normalizedValue = clamp(value, 0, 255);
-      const rotation = -60 + (normalizedValue / 255) * 120;
-      const signalLabel = getSignalLabel(normalizedValue);
+    function renderElectrodeGroup(elements, value) {
+      const normalizedValue = clamp(Math.round(value), 0, 255);
+      const intensity = normalizedValue / 255;
 
-      statusEl.textContent = String(normalizedValue);
-      signalValueEl.textContent = `${normalizedValue} / 255`;
-      signalLabelEl.textContent = signalLabel;
-      statusDetailEl.textContent = signalLabel;
-      needleEl.style.transform = `translateX(-50%) rotate(${rotation}deg)`;
+      for (const electrodeGraphicEl of elements) {
+        electrodeGraphicEl.style.setProperty("--electrode-core-opacity", (0.04 + intensity * 0.6).toFixed(3));
+        electrodeGraphicEl.style.setProperty("--electrode-mid-opacity", (0.08 + intensity * 0.42).toFixed(3));
+        electrodeGraphicEl.style.setProperty("--electrode-outer-opacity", (0.02 + intensity * 0.24).toFixed(3));
+        electrodeGraphicEl.style.setProperty("--electrode-glow-size", `${42 + intensity * 46}%`);
+      }
+    }
+
+    function renderElectrodes(signalValue, electrodes) {
+      const normalizedSignalValue = clamp(Math.round(signalValue), 0, 255);
+      const peakActivation = Math.max(
+        clamp(Math.round(electrodes.left.superiores), 0, 255),
+        clamp(Math.round(electrodes.left.inferiores), 0, 255),
+        clamp(Math.round(electrodes.right.superiores), 0, 255),
+        clamp(Math.round(electrodes.right.inferiores), 0, 255),
+      );
+      const signalLabel = getSignalLabel(peakActivation);
+
+      if (signalValueEl) {
+        signalValueEl.textContent = `${normalizedSignalValue} / 255`;
+      }
+
+      if (signalLabelEl) {
+        signalLabelEl.textContent = signalLabel;
+      }
+
+      electrodeGauge.valueEl.textContent = String(peakActivation);
+      electrodeGauge.detailEl.textContent = signalLabel;
+      renderElectrodeGroup(electrodeGroups.left.superiores, electrodes.left.superiores);
+      renderElectrodeGroup(electrodeGroups.left.inferiores, electrodes.left.inferiores);
+      renderElectrodeGroup(electrodeGroups.right.superiores, electrodes.right.superiores);
+      renderElectrodeGroup(electrodeGroups.right.inferiores, electrodes.right.inferiores);
+    }
+
+    function renderPedalSide(assemblyEl, pedalEl, labelEl, subLabelEl, crankAngle, pedalAngle) {
+      const crankDegrees = Math.round(toDegrees(crankAngle));
+      const continuousCrankDegrees = getContinuousDegrees(crankAngle, rotationTrackers[assemblyEl === leftPedalAssemblyEl ? "leftCrank" : "rightCrank"]);
+      const continuousPedalDegrees = getContinuousDegrees(pedalAngle, rotationTrackers[pedalEl === leftPedalRotorEl ? "leftPedal" : "rightPedal"]);
+      const relativePedalDegrees = normalizeDegrees(toDegrees(pedalAngle) - toDegrees(crankAngle));
+      assemblyEl.style.transform = `rotate(${continuousCrankDegrees}deg)`;
+      pedalEl.style.transform = `rotate(${continuousPedalDegrees}deg)`;
+      labelEl.textContent = `${crankDegrees}°`;
+      subLabelEl.textContent = `Pedal relativo ${relativePedalDegrees}°`;
+    }
+
+    function renderState(state) {
+      const normalizedValue = clamp(Math.round(state.signal ?? 0), 0, 255);
+      const omegaTarget = Number.isFinite(state.motors?.omegaTarget) ? state.motors.omegaTarget : 0;
+      const leftCrankAngle = Number.isFinite(state.motors?.left?.crankAngle) ? state.motors.left.crankAngle : 0;
+      const leftPedalAngle = Number.isFinite(state.motors?.left?.pedalAngle) ? state.motors.left.pedalAngle : 0;
+      const rightCrankAngle = Number.isFinite(state.motors?.right?.crankAngle) ? state.motors.right.crankAngle : Math.PI;
+      const rightPedalAngle = Number.isFinite(state.motors?.right?.pedalAngle) ? state.motors.right.pedalAngle : 0;
+      const electrodes = {
+        left: {
+          superiores: Number.isFinite(state.electrodes?.left?.superiores) ? state.electrodes.left.superiores : 0,
+          inferiores: Number.isFinite(state.electrodes?.left?.inferiores) ? state.electrodes.left.inferiores : 0,
+        },
+        right: {
+          superiores: Number.isFinite(state.electrodes?.right?.superiores) ? state.electrodes.right.superiores : 0,
+          inferiores: Number.isFinite(state.electrodes?.right?.inferiores) ? state.electrodes.right.inferiores : 0,
+        },
+      };
+
+      renderElectrodes(normalizedValue, electrodes);
+      renderPedalSide(leftPedalAssemblyEl, leftPedalRotorEl, leftPedalValueEl, leftPedalRelativeValueEl, leftCrankAngle, leftPedalAngle);
+      renderPedalSide(rightPedalAssemblyEl, rightPedalRotorEl, rightPedalValueEl, rightPedalRelativeValueEl, rightCrankAngle, rightPedalAngle);
+      motorStatusEl.textContent = `${omegaTarget.toFixed(2)} rad/s`;
+      motorStatusDetailEl.textContent = `S ${normalizedValue} / 255`;
+      debugLog("Rendered state", state);
+    }
+
+    function parseIncomingState(rawLine) {
+      const message = rawLine.trim();
+      if (!message) {
+        debugWarn("Ignoring empty serial line");
+        return null;
+      }
+
+      debugLog("Raw serial line", message);
+
+      if (message.startsWith("{")) {
+        try {
+          const parsed = JSON.parse(message);
+          const signal = Number(parsed.signal);
+
+          if (!Number.isFinite(signal)) {
+            debugWarn("JSON payload missing numeric signal", parsed);
+            return null;
+          }
+
+          const state = {
+            signal,
+            motors: {
+              omegaTarget: Number(parsed.motors?.omegaTarget),
+              left: {
+                crankAngle: Number(parsed.motors?.left?.crankAngle),
+                pedalAngle: Number(parsed.motors?.left?.pedalAngle),
+              },
+              right: {
+                crankAngle: Number(parsed.motors?.right?.crankAngle),
+                pedalAngle: Number(parsed.motors?.right?.pedalAngle),
+              },
+            },
+            electrodes: {
+              left: {
+                superiores: Number(parsed.electrodes?.left?.superiores),
+                inferiores: Number(parsed.electrodes?.left?.inferiores),
+              },
+              right: {
+                superiores: Number(parsed.electrodes?.right?.superiores),
+                inferiores: Number(parsed.electrodes?.right?.inferiores),
+              },
+            },
+          };
+          debugLog("Parsed JSON state", state);
+          return state;
+        } catch (error) {
+          debugError("Failed to parse JSON line", message, error);
+          return null;
+        }
+      }
+
+      const normalizedMessage = message.toUpperCase();
+      const numericValue = Number.parseInt(normalizedMessage, 10);
+
+      if (!Number.isNaN(numericValue)) {
+        const state = {
+          signal: numericValue,
+          motors: {
+            omegaTarget: 0,
+            left: {
+              crankAngle: 0,
+              pedalAngle: 0,
+            },
+            right: {
+              crankAngle: Math.PI,
+              pedalAngle: 0,
+            },
+          },
+          electrodes: {
+            left: {
+              superiores: 0,
+              inferiores: numericValue,
+            },
+            right: {
+              superiores: 0,
+              inferiores: numericValue,
+            },
+          },
+        };
+        debugLog("Parsed numeric fallback state", state);
+        return state;
+      }
+
+      if (normalizedMessage === "HIGH") {
+        const state = {
+          signal: 255,
+          motors: {
+            omegaTarget: 0,
+            left: {
+              crankAngle: 0,
+              pedalAngle: 0,
+            },
+            right: {
+              crankAngle: Math.PI,
+              pedalAngle: 0,
+            },
+          },
+          electrodes: {
+            left: {
+              superiores: 0,
+              inferiores: 255,
+            },
+            right: {
+              superiores: 0,
+              inferiores: 255,
+            },
+          },
+        };
+        debugLog("Parsed HIGH fallback state", state);
+        return state;
+      }
+
+      if (normalizedMessage === "LOW") {
+        const state = {
+          signal: 0,
+          motors: {
+            omegaTarget: 0,
+            left: {
+              crankAngle: 0,
+              pedalAngle: 0,
+            },
+            right: {
+              crankAngle: Math.PI,
+              pedalAngle: 0,
+            },
+          },
+          electrodes: {
+            left: {
+              superiores: 0,
+              inferiores: 0,
+            },
+            right: {
+              superiores: 0,
+              inferiores: 0,
+            },
+          },
+        };
+        debugLog("Parsed LOW fallback state", state);
+        return state;
+      }
+
+      debugWarn("Ignoring unrecognized serial line", message);
+      return null;
     }
 
     async function connectSerial() {
       if (!("serial" in navigator)) {
         metaEl.textContent = "Web Serial no es compatible con este navegador.";
-        connectionValueEl.textContent = "No compatible";
+        if (connectionValueEl) {
+          connectionValueEl.textContent = "No compatible";
+        }
         return;
       }
 
       connectButton.disabled = true;
 
       try {
+        await cleanupSerialConnection();
         port = await navigator.serial.requestPort();
+        debugLog("Port selected", port);
         await port.open({ baudRate: 115200 });
+        debugLog("Port opened at 115200 baud");
         metaEl.textContent = "Conectado. Esperando datos...";
-        connectionValueEl.textContent = "Conectado";
+        if (connectionValueEl) {
+          connectionValueEl.textContent = "Conectado";
+        }
         await readLoop();
       } catch (error) {
-        metaEl.textContent = `Error de conexión: ${error.message}`;
-        connectionValueEl.textContent = "Error de conexión";
+        debugError("Connection error", error);
+        const busyMessage = error.message.includes("Failed to open serial port")
+          ? "Puerto ocupado. Cierra Serial Monitor, Arduino IDE u otra app usando el puerto y vuelve a intentar."
+          : error.message;
+        metaEl.textContent = `Error de conexión: ${busyMessage}`;
+        if (connectionValueEl) {
+          connectionValueEl.textContent = "Error de conexión";
+        }
+        await cleanupSerialConnection();
         connectButton.disabled = false;
       }
     }
 
     async function readLoop() {
       const decoder = new TextDecoderStream();
-      port.readable.pipeTo(decoder.writable);
+      readableClosed = port.readable.pipeTo(decoder.writable);
       const inputStream = decoder.readable;
       reader = inputStream.getReader();
 
@@ -423,7 +991,9 @@
       try {
         while (true) {
           const { value, done } = await reader.read();
+          debugLog("Reader chunk", { done, value });
           if (done) {
+            debugWarn("Serial reader finished");
             break;
           }
 
@@ -432,30 +1002,53 @@
           buffer = lines.pop() || "";
 
           for (const line of lines) {
-            const message = line.trim().toUpperCase();
-            const numericValue = Number.parseInt(message, 10);
+            const nextState = parseIncomingState(line);
 
-            if (!Number.isNaN(numericValue)) {
-              renderState(numericValue);
+            if (nextState) {
+              renderState(nextState);
               metaEl.textContent = "Recebiendo datos en vivo del ESP32";
-            } else if (message === "HIGH") {
-              renderState(255);
-              metaEl.textContent = "Recebiendo datos en vivo del ESP32";
-            } else if (message === "LOW") {
-              renderState(0);
-              metaEl.textContent = "Recebiendo datos en vivo del ESP32";
+            } else {
+              debugWarn("No state produced from line", line);
             }
           }
         }
       } catch (error) {
+        debugError("Read loop error", error);
         metaEl.textContent = `Error de lectura: ${error.message}`;
-        connectionValueEl.textContent = "Error de lectura";
+        if (connectionValueEl) {
+          connectionValueEl.textContent = "Error de lectura";
+        }
       } finally {
-        reader.releaseLock();
+        debugLog("Cleaning up serial connection");
+        await cleanupSerialConnection();
         connectButton.disabled = false;
       }
     }
 
+    renderState({
+      signal: 0,
+      motors: {
+        omegaTarget: 0,
+        left: {
+          crankAngle: 0,
+          pedalAngle: 0,
+        },
+        right: {
+          crankAngle: Math.PI,
+          pedalAngle: 0,
+        },
+      },
+      electrodes: {
+        left: {
+          superiores: 0,
+          inferiores: 0,
+        },
+        right: {
+          superiores: 0,
+          inferiores: 0,
+        },
+      },
+    });
     connectButton.addEventListener("click", connectSerial);
   </script>
 </body>
